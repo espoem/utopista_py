@@ -1,0 +1,6 @@
+venv/
+credentials.json
+config.json
+*.log
+__pycache__/
+.idea/
