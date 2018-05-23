@@ -87,10 +87,9 @@ def contribution(row):
     :param row: list of values from worksheet
     :return: dict for contribution
     """
-    url = row[2]
-    url_split = url.split('/')
-    author = url_split[4][1:]
-    permlink = url_split[5]
+    url_split = row[2].split('/')
+    author = url_split[4][1:] if url_split[4][0] == "@" else url_split[3][1:]
+    permlink = url_split[5] if url_split[4][0] == "@" else url_split[4]
     review_date = parse_date_to_iso(row[1])
     repo_split = row[3].split('/') if 'github.com' in row[3] else []
     staff_pick = {
@@ -98,7 +97,7 @@ def contribution(row):
         'date': parse_date_to_iso(row[7])
     } if row[6].lower() == 'yes' else None
 
-    repo_full_name = f'{repo_split[3]}/{repo_split[4]}' \
+    repo_full_name = f'{repo_split[3]}/{repo_split[4].split("?")[0]}' \
         if len(repo_split) > 4 else ''
     score = float(row[5]) if row[5] else 0
     category = row[4]
@@ -111,7 +110,7 @@ def contribution(row):
     contrib = {
         'author': author,
         'permlink': permlink,
-        'post_category': (url_split[3]),
+        'post_category': 'utopian-io',
         'moderator': {
             'account': (row[0]),
             'date': review_date
