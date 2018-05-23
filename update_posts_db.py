@@ -68,9 +68,10 @@ def save_document(collection, document: dict):
 
 
 def update_document(db, key: str, document: dict, col_name: str):
-    logger.info(
-            f'Updating document {document["_key"]} - {document["author"]} - {document["permlink"]}')
-    aql = "UPDATE @key with @doc IN @@col RETURN NEW"
+    # logger.info(
+    #         f'Updating document {document["_key"]} - {document["author"]} - {document["permlink"]}')
+    aql = "UPDATE @key WITH @doc IN @@col OPTIONS {waitForSync: true} " \
+          "RETURN NEW"
     bind = {'key': key, 'doc': document, '@col': col_name}
     result = db.AQLQuery(aql, bindVars=bind)
     if result:
@@ -79,13 +80,13 @@ def update_document(db, key: str, document: dict, col_name: str):
 
 
 def process_post_db(post):
-    logger.info(f'Processing document {post["author"]} - {post["permlink"]}')
+    # logger.info(f'Processing document {post["author"]} - {post["permlink"]}')
     p = find_document(postCol,
             {'author': post['author'], 'permlink': post['permlink']})
     print(post['author'], post['permlink'])
     if p:
         p = p[0]
-        new = update_document(DB, p['_key'], p, POSTS_COLLECTION)
+        new = update_document(DB, p['_key'], post, POSTS_COLLECTION)
     else:
         new = save_document(postCol, post)
     return new
